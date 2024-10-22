@@ -5,19 +5,6 @@ from django.contrib.auth import logout as auth_logout
 from .forms import UserRegisterForm
 from django.urls import reverse
 
-#register
-def register(request):
-    if request.method == 'POST':
-        form = UserRegisterForm(request.POST)
-
-        if form.is_valid():
-            user = form.save()
-            Login(request, user)
-            return redirect('') #Redirect another page or dash
-    else:
-        form = UserRegisterForm()
-    return render(request, 'usercred/register.html',{'form': form})
-
 #login
 def login_view(request):
     if request.method == 'POST':
@@ -31,7 +18,20 @@ def login_view(request):
         else:
             return render(request, 'usercred/login.html',{'error':'Please Use Correct Credentials'})  
     
-    return render(request, 'usercred/login.html')        
+    return render(request, 'usercred/login.html')       
+
+#register
+def register(request):
+    if request.method == 'POST':
+        form = UserRegisterForm(request.POST)
+
+        if form.is_valid():
+            user = form.save()
+            Login(request, user)
+            return redirect('') #Redirect another page or dash
+    else:
+        form = UserRegisterForm()
+    return render(request, 'usercred/register.html',{'form': form}) 
         
 #logout        
 def logout(request):

@@ -1,83 +1,45 @@
 from django.shortcuts import render, redirect
 from .models import Workstamp
 from django.utils import timezone
-from django.contrib.auth.decorators import login_required
-import logging
 
-# Set up logging
-logger = logging.getLogger(__name__)
-
-@login_required
 def home_view(request):
-    # Fetch log time details
-    log_time_details = get_user_log_time(request.user)
+    user = request.user
+    today_log = Workstamp.objects.filter(user=user, date=timezone.now().date()).first()
 
-    # Render the home view with a welcome message and log time details
-    context = {
-        'welcome_message': 'Welcome to the Workstamp application!',
-        'user': request.user,
-        'log_time_details': log_time_details,
-    }
-    return render(request, 'workstamp/home.html', context)
+    if today_log and today_log.is_punched_in():
+        button_text = "Punch Out"
+        punch_out_url = 'punch_out'
+    else:
+        button_text = "Log Your Time"
+        punch_in_url = 'punch_in'
+    
+    return render(request, 'workstamp/home.html', {
+        'button_text': button_text,
+        'punch_out_url': punch_out_url if today_log and today_log.is_punched_in() else None,
+        'punch_in_url': punch_in_url if not today_log or not today_log.is_punched_in() else None
+    })
 
-# Function returns the log time details for the user
-def get_user_log_time(user):
-    return Workstamp.objects.filter(employee=user).order_by('-punch_in_time')
+# Punch In
+def punch_in_view(request):
+    user = request.user
+    today_log, created = Workstamp.objects.get_or_create(user=user, date=timezone.now().date())
+    
+    if today_log.punch_in_time is None:  # If not punched in yet
+        today_log.punch_in_time = timezone.now()
+        today_log.save()
+    
+    return redirect('workstamp:home')  # Redirect to home page after punching in
 
-@login_required
-def log_time(request):
-    context = {}
-
-    if request.method == 'POST':
-        try:
-            if 'punch_in' in request.POST:
-                create_workstamp(request.user)
-            elif 'punch_out' in request.POST:
-                update_workstamp(request.user, 'punch_out')
-            elif 'activity' in request.POST:
-                update_workstamp(request.user, 'activity', request.POST.get('activity', ''))
-            return redirect('workstamp:home')  # Redirect after processing the request
-        except Exception as e:
-            logger.error(f"Error in log_time view: {e}")
-            context['error_message'] = "An error occurred while logging time. Please try again."
-
-    # Fetch log time details to show on the log time page
-    context['log_time_details'] = get_user_log_time(request.user)
-    return render(request, 'workstamp/log_time.html', context)
-
-def create_workstamp(user):
-    if user is None:
-        logger.error("Error: User cannot be None.")
-        return
-
-    try:
-        # Check if a workstamp already exists for today
-        existing_workstamp = Workstamp.objects.filter(employee=user, punch_in_time__date=timezone.now().date()).first()
-        if existing_workstamp:
-            logger.warning("Workstamp for today already exists. Cannot create a new one.")
-            return "Workstamp for today already exists. Cannot create a new one." 
-
-        Workstamp.objects.create(employee=user, punch_in_time=timezone.now())
-        logger.info("Workstamp created successfully.")
-    except Exception as e:
-        logger.error(f"Error creating workstamp: {e}")
-        return "Error creating workstamp."
-
-def update_workstamp(user, update_type, activity=None):
-    try:
-        workstamp = Workstamp.objects.get(employee=user, punch_in_time__date=timezone.now().date())
-        
-        if update_type == 'punch_out':
-            workstamp.punch_out_time = timezone.now()
-        elif update_type == 'activity' and activity:
-            if workstamp.activities:
-                workstamp.activities += f'\n{activity}'
-            else:
-                workstamp.activities = activity
-        
-        workstamp.save()
-        logger.info("Workstamp updated successfully.")
-    except Workstamp.DoesNotExist:
-        logger.error("No workstamp found for today.")
-    except Exception as e:
-        logger.error(f"Error updating workstamp: {e}")
+# Punch Out and Log Activities
+def punch_out_view(request):
+    user = request.user
+    today_log = Workstamp.objects.filter(user=user, date=timezone.now().date()).first()
+    
+    if request.method == "POST":
+        activities = request.POST.get('activities')
+        today_log.activities = activities
+        today_log.punch_out_time = timezone.now()
+        today_log.save()
+        return redirect('workstamp:home')
+    
+    return render(request, 'punch_out.html', {'log': today_log})

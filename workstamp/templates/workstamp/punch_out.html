@@ -1,0 +1,16 @@
+{% extends 'usercred/base.html' %}
+
+{% block title %}Log Time{% endblock %}
+
+{% block content %}
+
+<form method="POST">
+    {% csrf_token %}
+    <div class="form-group">
+        <label for="activities">What did you work on today?</label>
+        <textarea name="activities" class="form-control" rows="4"></textarea>
+    </div>
+    <button type="submit" class="btn btn-success mt-3">Punch Out</button>
+</form>
+
+{% endblock %}

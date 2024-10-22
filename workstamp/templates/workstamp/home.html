@@ -14,9 +14,11 @@
             <li>No log time entries found.</li>
         {% endfor %}
     </ul>
+    {% if punch_in_url %}
+    <a href="{% url 'workstamp:punch_in' %}" class="btn btn-primary">Log Your Time</a>
+{% elif punch_out_url %}
+    <a href="{% url 'workstamp:punch_out' %}" class="btn btn-danger">Punch Out</a>
+{% endif %}
 
-    <!-- Button to access log_time view -->
-    <a href="{% url 'workstamp:log_time' %}" class="btn btn-primary">Log Time</a>
-    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
 
 {% endblock %}

@@ -1,11 +1,10 @@
 from django.urls import path
-from .views import log_time, home_view, create_workstamp
+from . import views
 
 app_name = 'workstamp'
 
 urlpatterns = [
-    path('', home_view, name='home'),  # Home view
-    path('log_time/', log_time, name='log_time'), # Log time view
-    #path('workstamp/', log_time, name='log_time'),  
-    path('create/', create_workstamp, name='create_workstamp'),  # Create workstamp view
+    path('home/', views.home_view, name='home'),  # Home page
+    path('punch_in/', views.punch_in_view, name='punch_in'),  # Punch In
+    path('punch_out/', views.punch_out_view, name='punch_out'),  # Punch Out
 ]
