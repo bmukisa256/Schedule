@@ -1,0 +1,22 @@
+{% extends 'usercred/base.html' %}
+
+{% block title %}Workstamp Home{% endblock %}
+
+{% block content %}
+    <h1>Welcome to Workstamp!</h1>
+    <p>{{ welcome_message }}</p>
+
+    <h2>Your Log Time Details</h2>
+    <ul>
+        {% for log in log_time_details %}
+            <li>{{ log.timestamp }}: {{ log.activity }}</li>
+        {% empty %}
+            <li>No log time entries found.</li>
+        {% endfor %}
+    </ul>
+
+    <!-- Button to access log_time view -->
+    <a href="{% url 'workstamp:log_time' %}" class="btn btn-primary">Log Time</a>
+    <a href="{% url 'logout' %}" class="btn btn-danger">Logout</a>
+
+{% endblock %}

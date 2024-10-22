@@ -1,0 +1,23 @@
+{% extends 'usercred/base.html' %}
+
+{% block title %}Log Time{% endblock %}
+
+{% block content %}
+<h2>Log Your Time</h2>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" name="punch_in" class="btn btn-success">Punch In</button>
+    <button type="submit" name="punch_out" class="btn btn-danger">Punch Out</button>
+    <textarea name="activity" placeholder="Log your activities here..." rows="4" cols="50"></textarea>
+    <button type="submit" name="log_activity" class="btn btn-primary">Log Activity</button>
+</form>
+
+<h3>Your Calendar Events</h3>
+<ul>
+    {% for event in events %}
+        <li>{{ event.summary }} at {{ event.start.dateTime|date:"Y-m-d H:i" }}</li>
+    {% empty %}
+        <li>No events for today.</li>
+    {% endfor %}
+</ul>
+{% endblock %}

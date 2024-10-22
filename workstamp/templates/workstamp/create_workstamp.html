@@ -1,0 +1,10 @@
+{% extends 'usercred/base.html' %}
+
+{% block content %}
+    <h1>Create Workstamp</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" name="punch_in">Punch In</button>
+    </form>
+    <a href="{% url 'log_time' %}">Back to Log Time</a>
+{% endblock %}

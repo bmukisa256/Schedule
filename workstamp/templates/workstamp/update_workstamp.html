@@ -1,0 +1,12 @@
+{% extends 'usercred/base.html' %}
+
+{% block content %}
+    <h1>Update Workstamp for {{ log.date }}</h1>
+    <form method="POST">
+        {% csrf_token %}
+        <label for="activity">Add Activity:</label>
+        <input type="text" name="activity" id="activity" placeholder="Enter activity">
+        <button type="submit">Update</button>
+    </form>
+    <a href="{% url 'workstamp:home' %}">Back to Work Log History</a>
+{% endblock %}

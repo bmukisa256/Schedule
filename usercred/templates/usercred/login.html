@@ -1,0 +1,23 @@
+{% extends 'usercred/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+    <h2 class="text-center">Login</h2>
+    {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+    <form method="POST" class="mt-4">
+        {% csrf_token %}
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    <p class="mt-3 text-center">Don't have an account? <a href="{% url 'register' %}">Register here</a>.</p>
+{% endblock %}
