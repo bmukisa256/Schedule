@@ -27,7 +27,7 @@ def login_view(request):
         
         if user is not None:
             Login(request, user)
-            return redirect(reverse('workstamp:log_time')) #Redirect another page or dash
+            return redirect(reverse('workstamp:home')) #Redirect another page or dash
         else:
             return render(request, 'usercred/login.html',{'error':'Please Use Correct Credentials'})  
     
@@ -36,4 +36,4 @@ def login_view(request):
 #logout        
 def logout(request):
     auth_logout(request)
-    return redirect('/login/') #Back to login page       
+    return redirect('login') #Back to login page       
